@@ -94,8 +94,8 @@ class CQMixMAC(BasicMAC):
         if all([isinstance(act_space, spaces.Box) for act_space in self.args.action_spaces]):
             for _aid in range(self.n_agents):
                 for _actid in range(self.args.action_spaces[_aid].shape[0]):
-                    chosen_actions[:, _aid, _actid].clamp_(np.asscalar(self.args.action_spaces[_aid].low[_actid]),
-                                                           np.asscalar(self.args.action_spaces[_aid].high[_actid]))
+                    chosen_actions[:, _aid, _actid].clamp_(self.args.action_spaces[_aid].low[_actid].item(),
+                                                           self.args.action_spaces[_aid].high[_actid].item())
         elif all([isinstance(act_space, spaces.Tuple) for act_space in self.args.action_spaces]):   # NOTE: This was added to handle scenarios like simple_reference since action space is Tuple
             for _aid in range(self.n_agents):
                 for _actid in range(self.args.action_spaces[_aid].spaces[0].shape[0]):

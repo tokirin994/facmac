@@ -1,0 +1,45 @@
+env: satellite_bhpa
+
+env_args:
+  seed: 0
+  # 卫星数量 (N)
+  satellite_num: 6
+  # 每个卫星的波束数量 (K)
+  beam_per_satellite: 4
+  # 每个卫星覆盖的候选小区数量 (C)
+  cell_per_satellite: 10
+  # 卫星间距 (km) - 用于 Hex Grid 生成
+  inter_sat_dist: 160.0
+  
+  # 物理层参数
+  # 载波频率 (Hz) - 20 GHz (Ka-band)
+  frequency: 2.0e+10
+  # 带宽 (Hz) - 500 MHz
+  bandwidth: 5.0e+8
+  # 总发射功率 (dBW) - 100W
+  total_power_dbw: 20.0
+  # 单波束最大功率 (dBW)
+  max_beam_power_dbw: 13.0
+  # 发射天线增益 (dBi)
+  max_transmit_gain_dbi: 35.0
+  # 接收天线增益 (dBi)
+  receive_gain_dbi: 30.0
+  # 噪声温度 (K)
+  noise_temp: 300
+  
+  # 几何参数
+  # 轨道高度 (km)
+  orbit_height: 600
+  # 服务半径 (km)
+  service_radius: 150.0
+  # 小区半径 (km)
+  cell_radius: 15.0
+  
+  # 仿真控制
+  # 数据包生存时间 (TTL) - 决定队列积压的惩罚上限
+  ttl: 5
+  # 时隙长度 (s) - 1ms
+  time_slot_duration: 0.001
+  # 单个 Episode 的最大步数
+  episode_limit: 50
+  

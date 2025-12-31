@@ -128,21 +128,21 @@ def run_sequential(args, logger):
                 for _actid in range(args.action_spaces[_aid].shape[0]):
                     _action_min = args.action_spaces[_aid].low[_actid]
                     _action_max = args.action_spaces[_aid].high[_actid]
-                    mult_coef_tensor[_aid, _actid] = np.asscalar(_action_max - _action_min)
-                    action_min_tensor[_aid, _actid] = np.asscalar(_action_min)
+                    mult_coef_tensor[_aid, _actid] = (_action_max - _action_min).item()
+                    action_min_tensor[_aid, _actid] = _action_min.item()
         elif all([isinstance(act_space, spaces.Tuple) for act_space in args.action_spaces]):
             for _aid in range(args.n_agents):
                 for _actid in range(args.action_spaces[_aid].spaces[0].shape[0]):
                     _action_min = args.action_spaces[_aid].spaces[0].low[_actid]
                     _action_max = args.action_spaces[_aid].spaces[0].high[_actid]
-                    mult_coef_tensor[_aid, _actid] = np.asscalar(_action_max - _action_min)
-                    action_min_tensor[_aid, _actid] = np.asscalar(_action_min)
+                    mult_coef_tensor[_aid, _actid] = (_action_max - _action_min).item()
+                    action_min_tensor[_aid, _actid] = _action_min.item()
                 for _actid in range(args.action_spaces[_aid].spaces[1].shape[0]):
                     _action_min = args.action_spaces[_aid].spaces[1].low[_actid]
                     _action_max = args.action_spaces[_aid].spaces[1].high[_actid]
                     tmp_idx = _actid + args.action_spaces[_aid].spaces[0].shape[0]
-                    mult_coef_tensor[_aid, tmp_idx] = np.asscalar(_action_max - _action_min)
-                    action_min_tensor[_aid, tmp_idx] = np.asscalar(_action_min)
+                    mult_coef_tensor[_aid, tmp_idx] = (_action_max - _action_min).item()
+                    action_min_tensor[_aid, tmp_idx] = _action_min.item()
 
         args.actions2unit_coef = mult_coef_tensor
         args.actions2unit_coef_cpu = mult_coef_tensor.cpu()
