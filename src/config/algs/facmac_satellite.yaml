@@ -68,7 +68,7 @@ test_greedy: True          # 测试时贪心策略（无探索噪声）
 test_interval: 5000        # 每5000步测试（卫星训练周期长，降低测试频率）
 test_nepisode: 20          # 每次测试20个episode（提升评估可靠性）
 testing_on: True
-t_max: 5000000             # 总训练步数（卫星任务需长时训练）
+t_max: 2000000             # 总训练步数（卫星任务需长时训练）
 
 # 模型保存与日志
 save_model: True           # 保存卫星任务的模型
@@ -76,15 +76,6 @@ save_model_interval: 10000 # 每50000步保存一次
 verbose: True              # 打印卫星训练日志（轨道参数、奖励、动作 Norm）
 weight_decay: True         # 权重衰减（防止过拟合卫星轨迹）
 weight_decay_factor: 1.0e-5  # 衰减系数（卫星数据维度高，轻微衰减）
-
-# # 卫星环境专属参数
-# env_args:
-#   state_last_action: False # 环境状态不包含last action（由Critic内部拼接）
-#   satellite_dim_p: 6       # 卫星位置/速度维度（3D位置+3D速度）
-#   satellite_dim_c: 3       # 卫星通信/姿态维度（滚转/俯仰/偏航）
-#   orbit_bound: [-1000, 1000] # 卫星轨道范围（单位：km）
-#   attitude_limit: [-np.pi, np.pi] # 卫星姿态角限制（弧度）
-#   max_episode_steps: 500   # 单episode最大步数（卫星单次任务周期）
 
 # 评论家网络配置
 agent_return_logits: False

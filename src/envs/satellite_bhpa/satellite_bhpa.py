@@ -350,11 +350,8 @@ class SatelliteEnv(MultiAgentEnv):
     动作空间改为连续向量 (N, 2*C)，前C维控制波束选择，后C维控制功率。
     """
     def __init__(self, **kwargs):
-        # 调用父类初始化
-        # 注意：这里直接手动初始化父类属性，不再调用 super().__init__ 避免参数冲突，
-        # 或者依然保留 super().__init__(**kwargs) 如果基类只做简单赋值。
-        # 假设 MultiAgentEnv 是个简单的基类。
-        # super().__init__(**kwargs) 
+        # 调用父类初始化以设置 self.args 等属性
+        super().__init__(**kwargs)
         
         env_args = kwargs.get("env_args", {})
         self.seed_val = env_args.get("seed", 42)
@@ -626,22 +623,90 @@ class SatelliteEnv(MultiAgentEnv):
             "normalise_actions": True            # 通知算法这是归一化的连续动作 (-1, 1)
         }
 
-    # ... get_obs, get_state 等函数保持原样 ...
     def get_obs(self) -> List[np.ndarray]:
-        full_obs = self._get_observation()
-        return [full_obs[i].reshape(-1) for i in range(self.num_satellites)]
+        """返回所有智能体的观测列表"""
+        full_obs = self._get_observation()  # (N, C, 3)
+        return [full_obs[i].astype(np.float32).reshape(-1) for i in range(self.num_satellites)]
+
+    def get_obs_agent(self, agent_id: int) -> np.ndarray:
+        """返回单个智能体的观测"""
+        full_obs = self._get_observation()  # (N, C, 3)
+        return full_obs[agent_id].astype(np.float32).reshape(-1)
+
+    def get_obs_size(self) -> int:
+        """返回单个智能体的观测维度"""
+        return self.obs_dim
 
     def get_state(self) -> np.ndarray:
-        return self._get_observation().reshape(-1)
-        
-    def get_total_actions(self):
-        # 对于连续空间，通常返回动作维度
+        """返回全局状态（展平为一维）"""
+        full_obs = self._get_observation()  # (N, C, 3)
+        return full_obs.astype(np.float32).reshape(-1)
+
+    def get_state_size(self) -> int:
+        """返回全局状态维度"""
+        return self.n_agents * self.obs_dim
+
+    def get_avail_actions(self) -> List[np.ndarray]:
+        """
+        返回所有智能体的可用动作
+        对于连续动作空间，所有动作都可用，返回全1向量
+        """
+        # 对于连续动作空间，返回全1表示所有动作都可用
+        return [np.ones(self.act_dim, dtype=np.int32) for _ in range(self.num_satellites)]
+
+    def get_avail_agent_actions(self, agent_id: int) -> np.ndarray:
+        """返回单个智能体的可用动作"""
+        # 对于连续动作空间，所有动作都可用
+        return np.ones(self.act_dim, dtype=np.int32)
+
+    def get_total_actions(self) -> int:
+        """返回单个智能体的动作维度（连续动作空间）"""
         return self.act_dim
 
-    # close, seed, render 等保持不变
-    def close(self):
-        if PLOT_AVAILABLE:
-            plt.close('all')
+    def get_num_agents(self) -> int:
+        """返回智能体数量"""
+        return self.num_satellites
 
-    def seed(self, seed):
+    def get_stats(self) -> Dict[str, Any]:
+        """返回环境统计信息"""
+        return {
+            "current_step": self.current_step_idx,
+            "episode_limit": self.episode_limit,
+            "total_queues": np.sum(self.local_queues),
+            "mean_queue": np.mean(self.local_queues),
+            "max_queue": np.max(self.local_queues),
+        }
+
+    def render(self, save_path: str = None):
+        """渲染环境（可选，需要matplotlib）"""
+        if not PLOT_AVAILABLE:
+            return
+        try:
+            plot_hexagonal_topology(
+                self.sat_positions_init,
+                self.cell_positions,
+                self.mapping_table,
+                self.sat_service_radius,
+                self.cell_radius,
+                save_path=save_path
+            )
+        except Exception as e:
+            print(f"Warning: Failed to render environment: {e}")
+
+    def close(self):
+        """关闭环境，清理资源"""
+        if PLOT_AVAILABLE:
+            try:
+                plt.close('all')
+            except:
+                pass
+
+    def seed(self, seed: int):
+        """设置随机种子"""
+        self.seed_val = seed
         self.rng = np.random.RandomState(seed)
+        try:
+            torch.manual_seed(seed)
+        except NameError:
+            # torch 未导入时跳过
+            pass

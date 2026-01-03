@@ -89,7 +89,7 @@ def run_sequential(args, logger):
     runner = r_REGISTRY[args.runner](args=args, logger=logger)
 
     # Set up schemes and groups here
-    if 'particle' not in args.env and "cts_matrix_game" not in args.env and "mujoco_multi" not in args.env:
+    if 'particle' not in args.env and "cts_matrix_game" not in args.env and "mujoco_multi" not in args.env and "satellite_bhpa" not in args.env:
         env_info = runner.get_env_info()
         args.n_agents = env_info["n_agents"]
         args.n_actions = env_info["n_actions"]

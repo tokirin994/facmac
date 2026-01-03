@@ -79,7 +79,7 @@ class EpisodeRunner:
             if getattr(self.args, "action_selector", "epsilon_greedy") == "gumbel":
                 actions = th.argmax(actions, dim=-1).long()
 
-            if self.args.env in ["particle"]:
+            if self.args.env in ["particle", "satellite_bhpa"]:
                 cpu_actions = copy.deepcopy(actions).to("cpu").numpy()
                 reward, terminated, env_info = self.env.step(cpu_actions[0])
                 if isinstance(reward, (list, tuple)):
