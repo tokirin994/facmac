@@ -69,7 +69,8 @@ def run(_run, _config, _log, pymongo_client=None):
     print("Exiting script")
 
     # Making sure framework really exits
-    os._exit(os.EX_OK)
+    # os._exit(os.EX_OK)
+    os._exit(0)
 
 
 def evaluate_sequential(args, runner):
