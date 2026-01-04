@@ -325,6 +325,36 @@ def plot_hexagonal_topology(
         plt.show()
     plt.close()
 
+class ScalarNormalizer:
+    """
+    用于对标量指标进行动态归一化。
+    维护一个指数移动平均 (EMA) 值，输出 value / (running_avg + eps)。
+    这样可以将不同量纲的物理量转化为相对其历史平均水平的无量纲比率。
+    """
+    def __init__(self, alpha: float = 0.95, epsilon: float = 1e-6):
+        self.alpha = alpha
+        self.mean = 0.0
+        self.epsilon = epsilon
+        self.count = 0
+
+    def normalize(self, x: float) -> float:
+        # 仅处理非负的量级，取绝对值是个保险，虽然物理量通常非负
+        val = float(x)
+        if self.count == 0:
+            self.mean = val
+        else:
+            # 更新移动平均：NewMean = alpha * OldMean + (1-alpha) * Current
+            # 注意：这里alpha定义为历史权重的衰减系数。
+            # 如果 alpha=0.95，表示历史平均占 95%，当前值占 5%。
+            self.mean = self.alpha * self.mean + (1 - self.alpha) * val
+        
+        self.count += 1
+        # 返回归一化后的值
+        return val / (abs(self.mean) + self.epsilon)
+    
+    def reset(self):
+        self.mean = 0.0
+        self.count = 0
 
 class TrafficGenerator:
     """模拟地面流量生成"""
@@ -561,48 +591,45 @@ class SatelliteEnv(MultiAgentEnv):
         # (a) 负载均衡指标 (Load Balance): Max Queue - Min Queue
         # 考虑所有卫星的所有小区队列
         all_queues = self.local_queues.flatten()
-        Q_max = np.max(all_queues)
-        Q_min = np.min(all_queues)
-        load_diff = Q_max - Q_min
         
-        # (b) 系统时延指标 (System Delay): 
-        # 可以用平均队列长度表示平均时延，用最大队列表示最差时延
-        # 用户要求优化 "系统时延"，通常指降低总时延或平均时延
-        avg_queue = np.mean(all_queues)
+        # (a) 负载均衡 (Load Balance Diff): 原始单位 Mbits
+        load_diff = float(np.max(all_queues) - np.min(all_queues))
         
-        # (c) 吞吐量 (Throughput)
-        total_throughput = np.sum(capacity)
+        # (b) 系统时延 (Avg Queue Length): 原始单位 Mbits (近似)
+        avg_queue = float(np.mean(all_queues))
         
-        # 8. 奖励计算 (Reward Function)
-        # 目标：最小化负载差，最小化队列堆积（即最小化时延），最大化吞吐
-        # R = - (alpha * LoadDiff + beta * AvgQueue) + gamma * Throughput
+        # (c) 总吞吐量 (Total Throughput): 原始单位 Mbps
+        total_throughput = float(np.sum(capacity))
         
-        # 归一化因子 (根据经验值设定，防止某项主导)
-        norm_Q = 100.0  # 假设队列最大约100 Mbits
-        norm_Th = self.num_satellites * self.beams_per_satellite * 500.0 # 假设最大吞吐
+        # 8. [核心修改] 动态量纲归一化
+        # 将每个指标除以其历史平均值，使其成为无量纲的比率
+        norm_load = self.load_normalizer.normalize(load_diff)
+        norm_delay = self.delay_normalizer.normalize(avg_queue)
+        norm_th = self.th_normalizer.normalize(total_throughput)
         
-        # 惩罚项
-        penalty_load = load_diff / (norm_Q + 1e-6)
-        penalty_delay = avg_queue / (norm_Q + 1e-6) # 平均队列越小，时延越小
-        
-        # 奖励项
-        reward_th = total_throughput / (norm_Th + 1e-6)
-        
-        # 组合权重
+        # 9. 奖励计算
+        # 现在权重 w 具有更纯粹的意义：相对重要性
+        # 例如 w_load=0.4 意味着我们对负载不均衡的惩罚权重是基准值的 0.4 倍
         w_load = 0.4
         w_delay = 0.4
         w_th = 0.2
         
-        reward = - (w_load * penalty_load + w_delay * penalty_delay) + w_th * reward_th
+        # 奖励公式：- (负载比率 + 时延比率) + 吞吐量比率
+        # 这样 reward 整体数值也会保持在 -1.0 ~ 1.0 附近的合理范围（取决于权重和波动）
+        reward = - (w_load * norm_load + w_delay * norm_delay) + w_th * norm_th
         
-        # 9. 状态更新与终止检查
+        # 10. 状态更新与终止检查
         self.current_step_idx += 1
         terminated = self.current_step_idx >= self.max_steps
         
         info = {
-            "load_diff": load_diff,
-            "avg_queue_delay": avg_queue,
-            "total_throughput": total_throughput,
+            "raw/load_diff": load_diff,
+            "raw/avg_queue": avg_queue,
+            "raw/throughput": total_throughput,
+            "norm/load_diff": norm_load,
+            "norm/avg_queue": norm_delay,
+            "norm/throughput": norm_th,
+            "reward": reward,
             "mean_power_util": np.mean(np.sum(final_power_alloc, axis=1)) / self.total_power_watt
         }
         
