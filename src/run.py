@@ -47,6 +47,9 @@ def run(_run, _config, _log, pymongo_client=None):
 
     # sacred is on by default
     logger.setup_sacred(_run)
+    
+    # 设置logger的模型保存路径和args
+    logger.setup_model_path(args)
 
     # Run and train
     run_sequential(args=args, logger=logger)
@@ -318,6 +321,11 @@ def run_sequential(args, logger):
             # learner.save_models(save_path, args.unique_token, model_save_time)
 
             learner.save_models(save_path)
+            
+            # 更新logger的统计文件保存路径（使用unique_token目录，不包含具体步数）
+            # CSV和图表保存在统计文件目录，而不是具体的步数目录下
+            stats_path = os.path.join(args.local_results_path, "models", args.unique_token)
+            logger.model_base_path = stats_path
 
         episode += args.batch_size_run
 
@@ -328,6 +336,9 @@ def run_sequential(args, logger):
 
     runner.close_env()
     logger.console_logger.info("Finished Training")
+    
+    # 训练完成后保存CSV和绘制曲线图
+    logger.finalize_training()
 
 
 def args_sanity_check(config, _log):
