@@ -408,6 +408,12 @@ class SatelliteEnv(MultiAgentEnv):
         self.inter_sat_dist = env_args.get("inter_sat_dist", 160.0)
         self.time_slot_duration = env_args.get("time_slot_duration", 1e-3)
 
+        # --- 初始化动态归一化器 ---
+        # alpha=0.99 表示平均值变化较平滑，适合作为稳定的基准
+        self.load_normalizer = ScalarNormalizer(alpha=0.99, epsilon=1e-2)
+        self.delay_normalizer = ScalarNormalizer(alpha=0.99, epsilon=1e-2)
+        self.th_normalizer = ScalarNormalizer(alpha=0.99, epsilon=1e-2)
+
         # --- 初始化拓扑 (保持原逻辑) ---
         print(f"[SatEnv] Initializing Topology (N={self.num_satellites}, K={self.beams_per_satellite}, C={self.cells_per_satellite})...")
         # 假设 generate_satellite_positions 等函数在外部定义可用
