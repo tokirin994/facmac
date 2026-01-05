@@ -68,7 +68,7 @@ test_greedy: True          # 测试时贪心策略（无探索噪声）
 test_interval: 2000        # 每2000步测试（卫星训练周期长，降低测试频率）
 test_nepisode: 10          # 每次测试10个episode（提升评估可靠性）
 testing_on: True
-t_max: 10000             # 总训练步数（卫星任务需长时训练）
+t_max: 200000             # 总训练步数（卫星任务需长时训练）
 
 # 模型保存与日志
 save_model: True           # 保存卫星任务的模型

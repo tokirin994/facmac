@@ -128,5 +128,149 @@
             // 是否自动重启程序（默认 false）
             "autoRestart": false
         },
+        {
+            // 配置名称（VS Code 调试面板中显示）
+            "name": "COMIX - Satellite Train",
+            // 调试类型（Python 项目固定为 python）
+            "type": "python",
+            // 请求类型：launch（启动程序）/ attach（附加到已有进程）
+            "request": "launch",
+            // 程序入口文件（COMIX 项目核心入口，对应 src/main.py）
+            "program": "${workspaceFolder}/src/main.py",
+            // 命令行参数（对应之前的训练指令，可按需调整）
+            "args": [
+                "--config=comix_satellite",
+                "--env-config=satellite_bhpa",
+                // 自定义训练参数（覆盖 yaml 配置，可选）
+                // "with",
+                // "env_args.satellite_num=6",
+                // "env_args.episode_limit=50",
+                // "t_max=200000",
+                // "batch_size=64"
+            ],
+            // 工作目录（项目根目录，确保相对路径生效）
+            "cwd": "${workspaceFolder}",
+            // Python 解释器路径（需替换为你的环境路径，虚拟环境/conda 环境均可）
+            // "python": "${workspaceFolder}/venv/bin/python", // Linux/Mac 示例
+            // "python": "${workspaceFolder}/venv/Scripts/python.exe", // Windows 示例
+            // 控制台输出类型：integratedTerminal（VS Code 集成终端）/ externalTerminal（系统终端）
+            "console": "integratedTerminal",
+            // 是否在调试开始前激活终端
+            "activateEnvironment": true,
+            // 是否停止在第一行断点（默认 false，按需开启）
+            "stopOnEntry": false,
+            // 断点配置
+            "breakpoint": {
+                "enabled": true,
+                "condition": "",
+                "hitCondition": ""
+            },
+            // 环境变量（指定 GPU、屏蔽无关警告等，可选）
+            // "env": {
+            //     "CUDA_VISIBLE_DEVICES": "0", // 指定使用第 0 块 GPU（无 GPU 可删除该行）
+            //     "PYTHONWARNINGS": "ignore", // 忽略 Python 警告
+            //     "PYTHONPATH": "${workspaceFolder}:${PYTHONPATH}" // 确保项目根目录加入 Python 路径
+            // },
+            // 调试结束后是否保持终端打开
+            "keepAliveTerminal": false,
+            // 是否自动重启程序（默认 false）
+            "autoRestart": false
+        },
+        {
+            // 配置名称（VS Code 调试面板中显示）
+            "name": "COVDN - Satellite Train",
+            // 调试类型（Python 项目固定为 python）
+            "type": "python",
+            // 请求类型：launch（启动程序）/ attach（附加到已有进程）
+            "request": "launch",
+            // 程序入口文件（COVDN 项目核心入口，对应 src/main.py）
+            "program": "${workspaceFolder}/src/main.py",
+            // 命令行参数（对应之前的训练指令，可按需调整）
+            "args": [
+                "--config=covdn_satellite",
+                "--env-config=satellite_bhpa",
+                // 自定义训练参数（覆盖 yaml 配置，可选）
+                // "with",
+                // "env_args.satellite_num=6",
+                // "env_args.episode_limit=50",
+                // "t_max=200000",
+                // "batch_size=64"
+            ],
+            // 工作目录（项目根目录，确保相对路径生效）
+            "cwd": "${workspaceFolder}",
+            // Python 解释器路径（需替换为你的环境路径，虚拟环境/conda 环境均可）
+            // "python": "${workspaceFolder}/venv/bin/python", // Linux/Mac 示例
+            // "python": "${workspaceFolder}/venv/Scripts/python.exe", // Windows 示例
+            // 控制台输出类型：integratedTerminal（VS Code 集成终端）/ externalTerminal（系统终端）
+            "console": "integratedTerminal",
+            // 是否在调试开始前激活终端
+            "activateEnvironment": true,
+            // 是否停止在第一行断点（默认 false，按需开启）
+            "stopOnEntry": false,
+            // 断点配置
+            "breakpoint": {
+                "enabled": true,
+                "condition": "",
+                "hitCondition": ""
+            },
+            // 环境变量（指定 GPU、屏蔽无关警告等，可选）
+            // "env": {
+            //     "CUDA_VISIBLE_DEVICES": "0", // 指定使用第 0 块 GPU（无 GPU 可删除该行）
+            //     "PYTHONWARNINGS": "ignore", // 忽略 Python 警告
+            //     "PYTHONPATH": "${workspaceFolder}:${PYTHONPATH}" // 确保项目根目录加入 Python 路径
+            // },
+            // 调试结束后是否保持终端打开
+            "keepAliveTerminal": false,
+            // 是否自动重启程序（默认 false）
+            "autoRestart": false
+        },
+        {
+            // 配置名称（VS Code 调试面板中显示）
+            "name": "IDDPG - Satellite Train",
+            // 调试类型（Python 项目固定为 python）
+            "type": "python",
+            // 请求类型：launch（启动程序）/ attach（附加到已有进程）
+            "request": "launch",
+            // 程序入口文件（IDDPG 项目核心入口，对应 src/main.py）
+            "program": "${workspaceFolder}/src/main.py",
+            // 命令行参数（对应之前的训练指令，可按需调整）
+            "args": [
+                "--config=iddpg_satellite",
+                "--env-config=satellite_bhpa",
+                // 自定义训练参数（覆盖 yaml 配置，可选）
+                // "with",
+                // "env_args.satellite_num=6",
+                // "env_args.episode_limit=50",
+                // "t_max=200000",
+                // "batch_size=64"
+            ],
+            // 工作目录（项目根目录，确保相对路径生效）
+            "cwd": "${workspaceFolder}",
+            // Python 解释器路径（需替换为你的环境路径，虚拟环境/conda 环境均可）
+            // "python": "${workspaceFolder}/venv/bin/python", // Linux/Mac 示例
+            // "python": "${workspaceFolder}/venv/Scripts/python.exe", // Windows 示例
+            // 控制台输出类型：integratedTerminal（VS Code 集成终端）/ externalTerminal（系统终端）
+            "console": "integratedTerminal",
+            // 是否在调试开始前激活终端
+            "activateEnvironment": true,
+            // 是否停止在第一行断点（默认 false，按需开启）
+            "stopOnEntry": false,
+            // 断点配置
+            "breakpoint": {
+                "enabled": true,
+                "condition": "",
+                "hitCondition": ""
+            },
+            // 环境变量（指定 GPU、屏蔽无关警告等，可选）
+            // "env": {
+            //     "CUDA_VISIBLE_DEVICES": "0", // 指定使用第 0 块 GPU（无 GPU 可删除该行）
+            //     "PYTHONWARNINGS": "ignore", // 忽略 Python 警告
+            //     "PYTHONPATH": "${workspaceFolder}:${PYTHONPATH}" // 确保项目根目录加入 Python 路径
+            // },
+            // 调试结束后是否保持终端打开
+            "keepAliveTerminal": false,
+            // 是否自动重启程序（默认 false）
+            "autoRestart": false
+        },
     ]
 }
